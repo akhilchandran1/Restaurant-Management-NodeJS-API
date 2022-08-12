@@ -1,0 +1,29 @@
+{
+  "name": "restaurant-management-nodejs-api-",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akhilchandran1/Restaurant-Management-NodeJS-API.git"
+  },
+  "author": "Akhil Chandran",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akhilchandran1/Restaurant-Management-NodeJS-API/issues"
+  },
+  "homepage": "https://github.com/akhilchandran1/Restaurant-Management-NodeJS-API#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
