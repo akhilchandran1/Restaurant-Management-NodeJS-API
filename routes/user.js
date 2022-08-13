@@ -2,6 +2,7 @@ const express = require("express");
 const connection = require("../connection/connection");
 const router = express.Router();
 require("dotenv").config();
+const jsonwebtoken = require("jsonwebtoken");
 
 router.post("/signup", (req, res, next) => {
     let user = req.body;
@@ -26,9 +27,26 @@ router.post("/signup", (req, res, next) => {
     });
 });
 
-router.get("/login", (req, res, next) => {
-    console.log(req.body);
-    return res.json({message: "login success"})
+router.post("/login", (req, res, next) => {
+    const user = req.body;
+    const query = "SELECT email, password, status, role FROM "+process.env.DB_TABLE+" WHERE email=?";
+    connection.query(query, [user.email], (err, results) => {
+        if(!err){
+            if(results.length <= 0 || results[0].password != user.password){
+                return res.status(401).json({message: "Incurrect Username of Password"});
+            }else if(results[0].status === "false"){
+                return res.status(401).json({message: "Wait for Admin Approval"});
+            }else if(results[0].password == user.password){
+                const response = {email: results[0].email, role: results[0].role};
+                const accessToken = jsonwebtoken.sign(response, process.env.ACCESS_TOKEN, {expiresIn: "9h"});
+                res.status(200).json({token: accessToken});
+            }else{
+                return res.status(400).json({message: "Something went wrong. Please try again later"});
+            }
+        }else{
+            return res.status(500).json(err);
+        }
+    });
 });
 
 module.exports = router;
