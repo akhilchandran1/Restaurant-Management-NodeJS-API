@@ -96,7 +96,22 @@ router.get("/get", (req, res, next) => {
         }else{
             return res.status(500).json(err);
         }
+    });
+});
+
+router.patch("/update", (req, res, next) => {
+    const user = req.body;
+    const query = "UPDATE "+process.env.DB_TABLE+" SET status=? WHERE id=?";
+    connection.query(query,[user.status, user.id], (err, results) => {
+        if(!err){
+            if(results.affectedRows == 0){
+                return res.status(404).json({message: "User ID does not exixt"});
+            }
+            return res.status(200).json({message: "User updated successfully"})
+        }else{
+
+        }
     })
-})
+});
 
 module.exports = router;
