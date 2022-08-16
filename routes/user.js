@@ -65,7 +65,6 @@ router.post("/forgotPassword", (req, res, next) => {
     connection.query(query,[user.email], (err, results) => {
         if(!err){
             if(results.length <= 0){
-                console.log(results.length)
                 return res.status(200).json({message: "Password sent successfully to your email."});
             }else{
                 var mailOptions = {
@@ -88,5 +87,16 @@ router.post("/forgotPassword", (req, res, next) => {
         }
     })
 });
+
+router.get("/get", (req, res, next) => {
+    const query = "SELECT id, name, email, contactNumber, status FROM "+process.env.DB_TABLE+" WHERE role='user'";
+    connection.query(query, (err, results) => {
+        if(!err){
+            return res.status(200).json(results);
+        }else{
+            return res.status(500).json(err);
+        }
+    })
+})
 
 module.exports = router;
