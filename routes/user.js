@@ -1,10 +1,14 @@
 const express = require("express");
 const connection = require("../connection/connection");
 const router = express.Router();
-require("dotenv").config();
 const jsonwebtoken = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { response } = require("express");
+require("dotenv").config();
+
+var auth = require("../services/authentication");
+var checkRole = require("../services/checkRole");
+
+
 
 router.post("/signup", (req, res, next) => {
     let user = req.body;
@@ -88,7 +92,7 @@ router.post("/forgotPassword", (req, res, next) => {
     })
 });
 
-router.get("/get", (req, res, next) => {
+router.get("/get", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     const query = "SELECT id, name, email, contactNumber, status FROM "+process.env.DB_TABLE+" WHERE role='user'";
     connection.query(query, (err, results) => {
         if(!err){
@@ -99,7 +103,7 @@ router.get("/get", (req, res, next) => {
     });
 });
 
-router.patch("/update", (req, res, next) => {
+router.patch("/update", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     const user = req.body;
     const query = "UPDATE "+process.env.DB_TABLE+" SET status=? WHERE id=?";
     connection.query(query,[user.status, user.id], (err, results) => {
@@ -113,5 +117,14 @@ router.patch("/update", (req, res, next) => {
         }
     })
 });
+
+router.get("/checkToken", auth.authenticateToken, (req, res, next) => {
+    return res.status(200).json({message: true});
+});
+
+router.post("/changePassword",(req, res, next) => {
+
+});
+// 1:29:38
 
 module.exports = router;
