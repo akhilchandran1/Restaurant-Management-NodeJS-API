@@ -13,3 +13,10 @@ CREATE TABLE user (
 
 -- To add user
 INSERT INTO user (name, contactNumber, email, password, status, role) VALUES ("admin", "123456789", "admin@gmail.com", "admin", "true", "admin");
+
+-- To create table
+CREATE TABLE category (
+    id int NOT NULL AUTO_INCREMENT,
+    name varchar(255) NOT NULL,
+    primary key(id)
+)
