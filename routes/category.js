@@ -7,6 +7,9 @@ require("dotenv").config();
 
 router.post("/add", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     const category = req.body;
+    if(category.name == null){
+        return res.status(400).json({message: "Please enter the Category name"})
+    }
     const query = "INSERT INTO "+process.env.DB_CATEGORY_TABLE+" (name) VALUES (?)";
     connection.query(query, [category.name], (err, results) => {
         if(!err){
@@ -29,9 +32,12 @@ router.get("/get", auth.authenticateToken, (req, res, next) => {
 });
 
 router.patch("/update", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
-    const product = req.body;
+    const category = req.body;
+    if(category.name == null || category.id == null) {
+        return res.status(400).json({message: "Please enter category Name and ID"})
+    }
     const query = "UPDATE "+process.env.DB_CATEGORY_TABLE+" SET name=? WHERE id=?";
-    connection.query(query, [product.name, product.id], (err, results) => {
+    connection.query(query, [category.name, category.id], (err, results) => {
         if(!err){
             if(results.affectedRows == 0){
                 return res.status(404).json({message: "Category ID does not found"});

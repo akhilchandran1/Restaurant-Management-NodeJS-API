@@ -12,10 +12,11 @@ var checkRole = require("../services/checkRole");
 
 router.post("/signup", (req, res, next) => {
     let user = req.body;
-    let query = "SELECT email, password, role, status FROM " + process.env.DB_TABLE + " WHERE email=?";
     if (user.name == null || user.contactNumber == null || user.email == null || user.password == null) {
         return res.status(400).json({ message: "Please enter all the required details" })
     }
+
+    let query = "SELECT email, password, role, status FROM " + process.env.DB_TABLE + " WHERE email=?";
     connection.query(query, [user.email], (err, results) => {
         if (!err) {
             if (results.length <= 0) {
@@ -38,6 +39,10 @@ router.post("/signup", (req, res, next) => {
 
 router.post("/login", (req, res, next) => {
     const user = req.body;
+    if(user.email == null || user.password == null){
+        return res.status(400).json({message: "Please enter youe Email ID and Password"})
+    }
+
     const query = "SELECT email, password, status, role FROM " + process.env.DB_TABLE + " WHERE email=?";
     connection.query(query, [user.email], (err, results) => {
         if (!err) {
@@ -108,6 +113,10 @@ router.get("/get", auth.authenticateToken, checkRole.checkRole, (req, res, next)
 
 router.patch("/update", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     const user = req.body;
+    if(user.status == null){
+        return res.status(400).json({message: "Please enter the status"})
+    }
+
     const query = "UPDATE " + process.env.DB_TABLE + " SET status=? WHERE id=?";
     connection.query(query, [user.status, user.id], (err, results) => {
         if (!err) {
