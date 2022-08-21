@@ -53,6 +53,24 @@ router.get("/getById/:id", auth.authenticateToken, (req, res, next) => {
             return res.status(500).json(err);
         }
     });
-})
+});
+
+router.patch("/update", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
+    const product = req.body;
+    if(product.id == null || product.name == null || product.categoryId == null || product.description == null || product.price == null){
+        return res.status(400).json({message: "Please enter values in all the required field."})
+    }
+    const query = "UPDATE "+process.env.DB_PRODUCT_TABLE+" SET name=?, categoryId=?, description=?, price=? WHERE id=?";
+    connection.query(query, [product.name, product.categoryId, product.description, product.price, product.id], (err, results) => {
+        if(!err){
+            if(results.affectedRows == 0){
+                return res.status(404).json({message: "Product ID does not found"});
+            }
+            return res.status(200).json({message: "Product update successfully"})
+        }else{
+            return res.status(500).json(err);
+        }
+    });
+});
 
 module.exports = router;
