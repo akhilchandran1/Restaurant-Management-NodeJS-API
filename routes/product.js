@@ -75,6 +75,9 @@ router.patch("/update", auth.authenticateToken, checkRole.checkRole, (req, res, 
 
 router.delete("/delete/:id", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     const id = req.params.id;
+    if(id == null){
+        return res.status(400).json({message: "Please enter the Product id"})
+    }
     const query = "DELETE FROM "+process.env.DB_PRODUCT_TABLE+" WHERE id=?";
     connection.query(query, [id], (err, results) => {
         if(!err){
@@ -87,5 +90,23 @@ router.delete("/delete/:id", auth.authenticateToken, checkRole.checkRole, (req, 
         }
     });
 });
+
+router.patch("/updateStatus", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
+    const user = req.body;
+    if(user.status == null || user.id == null){
+        return res.status(400).json({message: "Please enter Product ID and ststus"})
+    }
+    const query = "UPDATE "+process.env.DB_PRODUCT_TABLE+" SET status=? WHERE id=?";
+    connection.query(query, [user.status, user.id], (err, results) => {
+        if(!err){
+            if(results.affectedRows == 0){
+                return res.status(404).json({message: "Product ID does not found"});
+            }
+            return res.status(200).json({message: "Product status updated successfully"});
+        }else{
+            return res.status(500).json(err);
+        }
+    })
+})
 
 module.exports = router;
