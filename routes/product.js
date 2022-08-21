@@ -22,7 +22,6 @@ router.post("/add", auth.authenticateToken, checkRole.checkRole, (req, res, next
 
 router.get("/get", auth.authenticateToken, (req, res, next) => {
     const query = "SELECT p.id, p.name, p.description, p.price, p.status, c.id AS categoryId, c.name as categoryName FROM "+process.env.DB_PRODUCT_TABLE+" as p INNER JOIN "+process.env.DB_CATEGORY_TABLE+" as c where p.categoryId = c.id";
-    //const query = "select * from product"
     connection.query(query, (err, results) => {
         if(!err){
             return res.status(200).json(results);
@@ -32,11 +31,28 @@ router.get("/get", auth.authenticateToken, (req, res, next) => {
     })
 });
 
-router.patch("/update", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
-    const product = req.body;
-    
-    
+router.get("/getByCategory/:id", auth.authenticateToken, (req, res, next) => {
+    const id = req.params.id;
+    const query = "SELECT id, name FROM product WHERE categoryId=? AND status='true'";
+    connection.query(query, [id], (err, results) => {
+        if(!err){
+            return res.status(200).json(results);
+        }else{
+            return res.status(500).json(err);
+        }
+    });
 });
 
+router.get("/getById/:id", auth.authenticateToken, (req, res, next) => {
+    const id = req.params.id;
+    const query = "SELECT id, name, description, price FROM "+process.env.DB_PRODUCT_TABLE+" WHERE id=?";
+    connection.query(query, [id], (err, results) => {
+        if(!err){
+            return res.status(200).json(results[0]);
+        }else{
+            return res.status(500).json(err);
+        }
+    });
+})
 
 module.exports = router;
