@@ -38,4 +38,15 @@ router.post("/generateReport", auth.authenticateToken, (req, res, next) => {
 });
 
 
+router.post("/getReport", auth.authenticateToken, (req, res, next) => {
+    const orderDetails = req.body;
+    const pdfPath = "./generated_pdf/"+orderDetails.uuid+".pdf";
+    if(fs.existsSync(pdfPath)){
+        res.contentType("application/pdf");
+        fs.createReadStream(pdfPath).pipe(res);
+    }else{
+        return res.status(400).json({message:"Reposr not generated / Not found. "});
+    }
+});
+
 module.exports = router;
