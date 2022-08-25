@@ -7,6 +7,7 @@ let path = require("path");
 var fs = require("fs");
 var uuid = require("uuid");
 var auth = require("../services/authentication");
+var checkRole = require("../services/checkRole");
 require("dotenv").config();
 
 router.post("/generateReport", auth.authenticateToken, (req, res, next) => {
@@ -60,7 +61,7 @@ router.get("/getBills", auth.authenticateToken, (req, res, next) => {
     });
 });
 
-router.delete("/delete/:id", auth.authenticateToken, (req, res, next) => {
+router.delete("/delete/:id", auth.authenticateToken, checkRole.checkRole, (req, res, next) => {
     const id = req.params.id;
     const query = "DELETE FROM "+process.env.DB_BILL_TABLE+" WHERE id=?";
     connection.query(query, [id], (err, results) => {
@@ -72,6 +73,7 @@ router.delete("/delete/:id", auth.authenticateToken, (req, res, next) => {
         }else{
             return res.status(500).json(err);
         }
-    })
-})
+    });
+});
+
 module.exports = router;
