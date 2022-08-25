@@ -49,4 +49,15 @@ router.post("/getReport", auth.authenticateToken, (req, res, next) => {
     }
 });
 
+router.get("/getBills", auth.authenticateToken, (req, res, next) => {
+    const query = "SELECT *FROM "+process.env.DB_BILL_TABLE+" ORDER BY id DESC";
+    connection.query(query, (err, results) => {
+        if(!err){
+            return res.status(200).json(results);
+        }else{
+            return res.status(500).json(err);
+        }
+    })
+})
+
 module.exports = router;
