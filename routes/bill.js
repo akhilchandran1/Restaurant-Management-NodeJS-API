@@ -57,7 +57,21 @@ router.get("/getBills", auth.authenticateToken, (req, res, next) => {
         }else{
             return res.status(500).json(err);
         }
+    });
+});
+
+router.delete("/delete/:id", auth.authenticateToken, (req, res, next) => {
+    const id = req.params.id;
+    const query = "DELETE FROM "+process.env.DB_BILL_TABLE+" WHERE id=?";
+    connection.query(query, [id], (err, results) => {
+        if(!err){
+            if(results.affectedRows == 0){
+                return res.status(404).json({message: "Bill ID does not fount"});
+            }
+            return res.status(200).json({message: "Bill deleted successfully"});
+        }else{
+            return res.status(500).json(err);
+        }
     })
 })
-
 module.exports = router;
